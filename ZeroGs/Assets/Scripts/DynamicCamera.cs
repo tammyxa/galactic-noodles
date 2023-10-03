@@ -6,16 +6,15 @@ public class DynamicCamera : MonoBehaviour
 {
     public GameObject cam;
 
-   Rigidbody camRb;
+   Transform transform;
    Camera camComp;
    public GameObject player;
-   float accel = 0f;
+   bool inView = true;
 
 
-    // Start is called before the first frame update
     void Start()
     {
-        camRb = GetComponent<Rigidbody>();
+        transform = GetComponent<Transform>();
         camComp = cam.GetComponent<Camera>();
         player = null;
     }
@@ -25,18 +24,16 @@ public class DynamicCamera : MonoBehaviour
     {
         if (player == null) return;
 
-        Vector3 dirVec = player.transform.position - this.gameObject.transform.position;
-        dirVec.y = 0;
-        
-        camRb.velocity = dirVec + ( dirVec.normalized * (dirVec.magnitude > 10.5f ? accel += 0.01f : 0f));
+        Vector3 dirVec = player.transform.position - transform.position;
+
+        transform.Translate(dirVec * Time.deltaTime, Space.World);
+        //camRb.velocity = dirVec + ( dirVec.normalized * (dirVec.magnitude > 10.5f ? accel += 0.01f : 0f));
     }
 
     private void OnTriggerEnter(Collider other) {
         if (other.tag != "Player") return;
 
-        camRb.velocity = new Vector3(0,0,0);
         player = null;
-        accel = 0f;
     }
 
     /*
