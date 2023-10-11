@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
+using static playable.PlayableObject;
 
 
-class PlayerInput : MonoBehaviour
+//TODO: MAJOR RE-WORK
+//      * Move OnInteracts and OnGrabs to call PlayabObject events
+
+public class PlayerInput : MonoBehaviour
 {
     public float gravity = 15.0f;
     public float speed = 5.0f;
@@ -13,13 +18,16 @@ class PlayerInput : MonoBehaviour
     public float turnSpeed = 720.0f;
     public List<GameObject> playObjs;
 
+    [HideInInspector]
+    public GameObject holding;
+    [HideInInspector]
+    public playable.PlayableObject interacting;
+
     private Animator anim;
     private CharacterController controller;
     private Vector2 moveInput;
     private float verticalVelo = 0f;
-    private bool isInteracting = false;
-    private GameObject holding;
-    private int x = 0;
+
 
 
     void Awake()
@@ -65,6 +73,7 @@ class PlayerInput : MonoBehaviour
         if (other.tag != "PlayObj") return;
 
         playObjs.Add(other.gameObject);
+        other.GetComponent<playable.PlayableObject>().OnRangeEnter(this);
     }
 
      private void OnTriggerExit(Collider other)
@@ -72,6 +81,7 @@ class PlayerInput : MonoBehaviour
         if (other.tag != "PlayObj") return;
 
         playObjs.Remove(other.gameObject);
+        other.GetComponent<playable.PlayableObject>().OnRangeExit(this);
     }
 
 
@@ -79,8 +89,22 @@ class PlayerInput : MonoBehaviour
     {
         //NOTE: make sure GroundCheck gameObject is first child
         return Physics.Raycast(transform.GetChild(0).position,
-            Vector3.down, 
+            Vector3.down,
             0.1f);
+    }
+
+    private GameObject FetchFirstPlayable()
+    {
+        List<GameObject> removeList = new List<GameObject>();
+        foreach (GameObject obj in playObjs)
+        {
+            if (obj == null)
+                removeList.Add(obj);
+        }
+        foreach (GameObject obj in removeList)
+            playObjs.Remove(obj);
+
+        return playObjs[0];
     }
 
 
@@ -103,35 +127,50 @@ class PlayerInput : MonoBehaviour
     {
         if (context.canceled || context.performed) return;
 
-        Rigidbody rb;
-
-        //dropping item
         if (holding != null)
         {
-            holding.transform.SetParent(null);
-            rb = holding.GetComponent<Rigidbody>();
-            if (rb != null)
-                rb.constraints = RigidbodyConstraints.None;
-            holding = null;
+            holding.GetComponent<playable.PlayableObject>().OnGrab(this);
             return;
         }
-
-        if (playObjs.Count <= 0) return;
-
-        holding = playObjs[0];
-        rb = holding.GetComponent<Rigidbody>();
-        if (rb != null)
-            rb.constraints = RigidbodyConstraints.FreezeAll;
-        holding.transform.SetParent(transform);
-        holding.transform.localPosition = new Vector3(0f, 1f, 0.85f);
-        holding.transform.LookAt(transform);
-        holding.transform.rotation = Quaternion.LookRotation(new Vector3(0f, holding.transform.rotation.y, 0f), Vector3.up);
+        
+        if (playObjs.Count < 1) return;
+        playObjs[0].GetComponent<playable.PlayableObject>().OnGrab(this);
     }
+
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        
-        //playAnim("interact", true);
+        if (context.performed) return;
+
+        if (context.started && playObjs.Count > 0)      //While holding
+        {
+            playObjs[0].GetComponent<playable.PlayableObject>().OnInteract(this);
+        }
+        else if (context.canceled && this.interacting != null)
+        {   
+            this.interacting.OnInteract(this);
+            this.interacting = null;
+        }   
+
+        /*
+        if (context.started && playObjs.Count > 0 && interacting == null)    //While holding
+        {   
+            interacting = FetchFirstPlayable().GetComponent<playable.PlayableObject>();
+            if (!interacting.isInteract())
+            {
+                interacting = null;
+                return;
+            }
+            isInteracting = true;
+            interacting.OnInteract(this.gameObject);
+        }
+        else if (context.canceled && interacting != null)
+        {
+            isInteracting = false;
+            interacting.OnInteract(this.gameObject);
+            interacting = null;
+        }
+        */
     }
 
 
