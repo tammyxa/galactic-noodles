@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
-using static playable.PlayableObject;
+using static PlayableObject;
 
 
 //TODO: MAJOR RE-WORK
@@ -21,7 +21,7 @@ public class PlayerInput : MonoBehaviour
     [HideInInspector]
     public GameObject holding;
     [HideInInspector]
-    public playable.PlayableObject interacting;
+    public PlayableObject interacting;
 
     private Animator anim;
     private CharacterController controller;
@@ -70,18 +70,18 @@ public class PlayerInput : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag != "PlayObj") return;
+        if (other.tag != "PlayObj" || playObjs.Contains(other.gameObject)) return;
 
         playObjs.Add(other.gameObject);
-        other.GetComponent<playable.PlayableObject>().OnRangeEnter(this);
+        other.GetComponent<PlayableObject>().OnRangeEnter(this);
     }
 
-     private void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
         if (other.tag != "PlayObj") return;
 
-        playObjs.Remove(other.gameObject);
-        other.GetComponent<playable.PlayableObject>().OnRangeExit(this);
+        if ( playObjs.Remove(other.gameObject) )
+            other.GetComponent<PlayableObject>().OnRangeExit(this);
     }
 
 
@@ -93,18 +93,14 @@ public class PlayerInput : MonoBehaviour
             0.1f);
     }
 
-    private GameObject FetchFirstPlayable()
+
+    public void fixNullObj()
     {
-        List<GameObject> removeList = new List<GameObject>();
         foreach (GameObject obj in playObjs)
         {
             if (obj == null)
-                removeList.Add(obj);
+                playObjs.Remove(obj);
         }
-        foreach (GameObject obj in removeList)
-            playObjs.Remove(obj);
-
-        return playObjs[0];
     }
 
 
@@ -115,7 +111,7 @@ public class PlayerInput : MonoBehaviour
         moveInput = context.ReadValue<Vector2>();
     }
 
-    public void OnJump(InputAction.CallbackContext context) 
+    public void OnJump(InputAction.CallbackContext context)
     {
         if (!isGrounded()) return;
 
@@ -125,37 +121,54 @@ public class PlayerInput : MonoBehaviour
 
     public void OnGrab(InputAction.CallbackContext context)
     {
-        if (context.canceled || context.performed) return;
-
-        if (holding != null)
+        try
         {
-            holding.GetComponent<playable.PlayableObject>().OnGrab(this);
-            return;
+            if (context.canceled || context.performed) return;
+
+            if (holding != null)
+            {
+                holding.GetComponent<PlayableObject>().OnGrab(this);
+                return;
+            }
+
+            if (playObjs.Count < 1) return;
+            playObjs[0].GetComponent<PlayableObject>().OnGrab(this);
         }
-        
-        if (playObjs.Count < 1) return;
-        playObjs[0].GetComponent<playable.PlayableObject>().OnGrab(this);
+        catch
+        {
+            fixNullObj();
+            playObjs[0].GetComponent<PlayableObject>().OnGrab(this);
+        }
     }
 
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        if (context.performed) return;
-
-        if (context.started && playObjs.Count > 0)      //While holding
+        try
         {
-            playObjs[0].GetComponent<playable.PlayableObject>().OnInteract(this);
+            if (context.performed) return;
+
+            if (context.started && playObjs.Count > 0)      //While holding
+            {
+                this.interacting = playObjs[0].GetComponent<PlayableObject>();
+                interacting.OnInteract(this);
+            }
+            else if (context.canceled && this.interacting != null)
+            {
+                var temp = this.interacting;
+                this.interacting = null;
+                temp.OnInteract(this);
+            }
         }
-        else if (context.canceled && this.interacting != null)
-        {   
-            this.interacting.OnInteract(this);
-            this.interacting = null;
-        }   
+        catch
+        {
+            fixNullObj();
+        }
 
         /*
         if (context.started && playObjs.Count > 0 && interacting == null)    //While holding
         {   
-            interacting = FetchFirstPlayable().GetComponent<playable.PlayableObject>();
+            interacting = FetchFirstPlayable().GetComponent<PlayableObject>();
             if (!interacting.isInteract())
             {
                 interacting = null;
@@ -175,7 +188,7 @@ public class PlayerInput : MonoBehaviour
 
 
     //===== Animation Control ======================
-    void playAnim(string type, bool play=true)
+    void playAnim(string type, bool play = true)
     {
         switch (type)
         {
@@ -185,19 +198,19 @@ public class PlayerInput : MonoBehaviour
                     anim.SetBool("isRunning", true);
                 else
                     anim.SetBool("isRunning", false);
-            break;
+                break;
 
             case "interact":
                 anim.SetBool("isReacting", play);
-            break;
+                break;
 
             case "jump":
                 anim.SetBool("isJumping", play);
-            break;
+                break;
 
             default:
                 Debug.Log("[ERROR]: Unknown Animation Tag");
-            break;
+                break;
         }
 
         /*

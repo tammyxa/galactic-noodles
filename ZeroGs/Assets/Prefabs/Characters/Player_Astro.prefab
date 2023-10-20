@@ -136,7 +136,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400014, guid: 02dd6406ed1ebc248b2fafd0485e0de9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.02
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400014, guid: 02dd6406ed1ebc248b2fafd0485e0de9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -256,7 +256,7 @@ CharacterController:
   serializedVersion: 3
   m_Height: 2
   m_Radius: 0.55
-  m_SlopeLimit: 45
+  m_SlopeLimit: 25
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
@@ -369,9 +369,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gravity: 15
   speed: 5
-  jumpSpeed: 5
+  jumpSpeed: 8
   turnSpeed: 720
   playObjs: []
+  isInteracting: 0
 --- !u!136 &5774558160685683621
 CapsuleCollider:
   m_ObjectHideFlags: 0

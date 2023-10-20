@@ -2,19 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static PlayerInput;
-using static playable.PlayableObject;
+using static PlayableObject;
+using static ProgressBar;
 
-public class OreObject : playable.PlayableObject
+public class OreObject : PlayableObject
 {
-    public TextMesh display;
-    public float health = 100f;
+    public ProgressBar bar;
+    public float maxHealth = 100f;
     public float destroyRate = 0.5f;
     public GameObject drops;
     private List<PlayerInput> players;
+    private float health;
     
 
-    void Awake() 
+    public OreObject() 
     {
+        health = maxHealth;
         this.OnInteract = _interaction;
         this.OnRangeExit = _rangeExit;
         players = new List<PlayerInput>();
@@ -24,29 +27,35 @@ public class OreObject : playable.PlayableObject
 
     void Update()
     {
-        int miningCount = players.Count;
-
-        if (miningCount < 1) return;
+        if (players.Count < 1) return;
 
         if (health <= 0f) {
-            dropItems();
-            foreach (PlayerInput p in players)
-                p.playObjs.Remove(this.gameObject);
+            dropItems( (int)(Time.deltaTime % 3));
             GameObject.Destroy(this.gameObject);
             return;
         }
 
-        health -= destroyRate * (float)miningCount;
-        display.text = ((int)health).ToString();
+        health -= destroyRate * (float)players.Count;
+        bar.displayPercent = health / maxHealth;
+        //display.text = ((int)health).ToString();
+    }
+
+
+    void OnDestroy()
+    {
+        foreach (PlayerInput p in players) {
+            if (!p.playObjs.Remove(this.gameObject))
+                p.fixNullObj();
+            p.interacting = null;
+        }
     }
 
     
     private void _interaction(PlayerInput player)
     {
-        if (player.interacting == null)
+        if (player.interacting != null)
         {
             players.Add(player);
-            player.interacting = (playable.PlayableObject)this;
         }
         else
         {
@@ -63,10 +72,12 @@ public class OreObject : playable.PlayableObject
         players.Remove(player);
     }
 
+
     private void dropItems(int count=1)
     {
         if (drops == null) return;
-        GameObject.Instantiate(drops, this.transform);
+        GameObject newObj = GameObject.Instantiate(drops);
+        newObj.transform.position = this.transform.position;
     }
     
 }
