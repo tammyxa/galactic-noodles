@@ -27,6 +27,7 @@ public class GrabbleObject : PlayableObject
                 if (rb != null)
                     rb.constraints = RigidbodyConstraints.None;
                 player.holding = null;
+                player.playObjs.Add(this.gameObject);
                 return;
             }
 
@@ -40,8 +41,9 @@ public class GrabbleObject : PlayableObject
                     rb.constraints = RigidbodyConstraints.FreezeAll;
                 player.holding.transform.SetParent(player.transform);
                 player.holding.transform.localPosition = new Vector3(0f, 1f, 0.85f);
-                player.holding.transform.LookAt(player.transform, Vector3.up);
-                player.holding.transform.localRotation = Quaternion.LookRotation(new Vector3(0f, player.holding.transform.localRotation.y, 0f), Vector3.up);
+                player.holding.transform.LookAt(player.transform, Vector3.forward);
+                player.holding.transform.localRotation = Quaternion.LookRotation(Vector3.zero);
+                player.playObjs.Remove(player.holding);
             }
         }
         catch (NullReferenceException e)

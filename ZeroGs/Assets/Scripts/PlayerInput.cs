@@ -7,9 +7,6 @@ using UnityEngine.InputSystem.Interactions;
 using static PlayableObject;
 
 
-//TODO: MAJOR RE-WORK
-//      * Move OnInteracts and OnGrabs to call PlayabObject events
-
 public class PlayerInput : MonoBehaviour
 {
     public float gravity = 15.0f;
@@ -70,7 +67,7 @@ public class PlayerInput : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag != "PlayObj" || playObjs.Contains(other.gameObject)) return;
+        if (other.tag != "PlayObj" || playObjs.Contains(other.gameObject) || other.gameObject == this.holding) return;
 
         playObjs.Add(other.gameObject);
         other.GetComponent<PlayableObject>().OnRangeEnter(this);
@@ -125,13 +122,13 @@ public class PlayerInput : MonoBehaviour
         {
             if (context.canceled || context.performed) return;
 
-            if (holding != null)
+            if (holding != null && playObjs.Count < 1)
             {
                 holding.GetComponent<PlayableObject>().OnGrab(this);
                 return;
             }
+            else if (playObjs.Count < 1) return;
 
-            if (playObjs.Count < 1) return;
             playObjs[0].GetComponent<PlayableObject>().OnGrab(this);
         }
         catch

@@ -19,7 +19,7 @@ public class ProgressBar : MonoBehaviour
 
     void Update()
     {
-        if (displayPercent >= 1f) {
+        if (displayPercent >= 1f || displayPercent < 0.01f) {
             this.GetComponent<Canvas>().enabled = false;
             return;
         }
