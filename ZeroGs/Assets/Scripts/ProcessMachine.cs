@@ -4,24 +4,32 @@ using UnityEngine;
 using static PlayerInput;
 using static PlayableObject;
 using static ProgressBar;
+using static RadialProgressBar;
 
 public class ProcessMachine : PlayableObject
 {
-    public float health = 50f;
+    public float maxHealth = 50f;
     public int maxOutputStack = 5;
     public int maxInputStack = 5;
     public float processRate = 0.1f;
+    public float repairRate = 0.3f;
     public GameObject outputItem;
     public ProgressBar uiBar;
+    public RadialProgressBar uiFix;
 
+
+    private bool isBroken = false;
+    public float health = 50f;
 
     private float progress = 0f;
     private int inCount = 0;
     private int outCount = 0;
+    private List<PlayerInput> interactList;
     
 
     ProcessMachine()
     {
+        interactList = new List<PlayerInput>();
         this.type = "MACHINE";
         this.OnGrab = _grab;
         this.OnInteract = _interact;
@@ -39,7 +47,28 @@ public class ProcessMachine : PlayableObject
 
     void Update()
     {
-        if (inCount < 1 || outCount >= maxOutputStack)
+        //machine health check
+        if (health < maxHealth || isBroken)      //fixable state
+        {
+            health = health > maxHealth ? maxHealth
+                : health + (interactList.Count * repairRate);
+            uiFix.displayPercent = health / maxHealth;
+
+            if (isBroken && health >= maxHealth) 
+            {
+                isBroken = false;
+                //apply normal textures
+            }
+            else if (health <= 0f)                                               //broken state
+            {
+                isBroken = true;
+                //apply broken textures
+                return;
+            }
+        }
+
+        //process Gate
+        if (inCount < 1 || outCount >= maxOutputStack || isBroken)                      //idle state
         {
             //turn off animation
             return;
@@ -81,8 +110,11 @@ public class ProcessMachine : PlayableObject
     }
 
 
-    void _interact(Playerinput player)
+    void _interact(PlayerInput player)
     {
-
+        if (player.interacting == null)
+            interactList.Remove(player);
+        else
+            interactList.Add(player);
     }
 }
