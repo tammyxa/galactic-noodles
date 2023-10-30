@@ -30,7 +30,7 @@ public class OreObject : PlayableObject
         if (players.Count < 1) return;
 
         if (health <= 0f) {
-            dropItems( (int)(Time.deltaTime % 3));
+            dropItems( (int)(Time.fixedTime % 3) + 1);
             GameObject.Destroy(this.gameObject);
             return;
         }

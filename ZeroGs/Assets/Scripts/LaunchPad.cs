@@ -4,14 +4,27 @@ using System;
 using UnityEngine;
 using static PlayableObject;
 using static RadialProgressBar;
+using static GameMaster;
 
 
+/*===== LaunchPad ==============================
+* This class will handle two states in the game
+* 
+* Build State: where players use scrap to build the pad
+*       - a small box collider will act as a drop point for scrap items
+          where it will increase progress by a certain amount
+* Escape State: Once build state is completed, box collider disables and
+        a large sphere collider will activate to act as a zone for players to stand.
+        The class will track the total players in it and will trigger an game end
+        when all players are present.
+*/
 public class LaunchPad : PlayableObject
 {
     public RadialProgressBar radialBar;
     public float requiredBuild = 10f;
     public float scrapBuildCost = 1f;
     public GameObject escapeRender;
+    public GameMaster GM;
 
     [HideInInspector]
     public int totalPlayers = 1;    //will get this from GameMaster 
@@ -53,11 +66,12 @@ public class LaunchPad : PlayableObject
         if (radialBar.displayPercent >= 1f)
         {
             //trigger end game
-            Debug.Log("EndGame!");
+            GM.EndGame(GameMaster.WinState.WIN);
+            //this.enabled = false;
         }
     }
 
-    //TODO: change to 
+    
     void OnTriggerEnter(Collider other)
     {
         if (other.tag != "Player" || other.isTrigger || !escapeState) return;

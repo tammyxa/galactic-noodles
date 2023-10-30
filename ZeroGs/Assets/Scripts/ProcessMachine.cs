@@ -16,6 +16,8 @@ public class ProcessMachine : PlayableObject
     public GameObject outputItem;
     public ProgressBar uiBar;
     public RadialProgressBar uiFix;
+    public Material damage;
+    public Material normal;
 
 
     private bool isBroken = false;
@@ -51,18 +53,20 @@ public class ProcessMachine : PlayableObject
         if (health < maxHealth || isBroken)      //fixable state
         {
             health = health > maxHealth ? maxHealth
-                : health + (interactList.Count * repairRate);
+                : health + (interactList.Count * repairRate * Time.deltaTime);
             uiFix.displayPercent = health / maxHealth;
 
             if (isBroken && health >= maxHealth) 
             {
                 isBroken = false;
                 //apply normal textures
+                this.GetComponent<MeshRenderer>().materials[0] = normal;
             }
             else if (health <= 0f)                                               //broken state
             {
                 isBroken = true;
                 //apply broken textures
+                this.GetComponent<MeshRenderer>().materials[0] = damage;
                 return;
             }
         }
@@ -74,7 +78,7 @@ public class ProcessMachine : PlayableObject
             return;
         }
 
-        progress += processRate;
+        progress += processRate * Time.deltaTime;
         
         if (progress >= 100f) {
             inCount -= 1;
