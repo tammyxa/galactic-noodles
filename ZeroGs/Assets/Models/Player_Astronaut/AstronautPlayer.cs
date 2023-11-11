@@ -3,7 +3,7 @@ using System.Collections;
 
 
 
-	public class __PlayerMovement : MonoBehaviour {
+	public class PlayerMovement : MonoBehaviour {
 
 		private Animator anim;
 		private CharacterController controller;

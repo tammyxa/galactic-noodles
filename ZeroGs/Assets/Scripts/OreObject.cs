@@ -76,12 +76,8 @@ public class OreObject : PlayableObject
     private void dropItems(int count=1)
     {
         if (drops == null) return;
-        while (count > 0)
-        {
-            GameObject newObj = GameObject.Instantiate(drops);
-            newObj.transform.position = this.transform.position;
-            count--;
-        }
+        GameObject newObj = GameObject.Instantiate(drops);
+        newObj.transform.position = this.transform.position;
     }
     
 }
