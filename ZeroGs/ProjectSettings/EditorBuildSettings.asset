@@ -4,5 +4,15 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: c022e450324f85e46932c60f395e428d
+  - enabled: 1
+    path: Assets/Scenes/Space.unity
+    guid: 8f04b06dbc1bc9d42b410999869d42f5
+  - enabled: 1
+    path: Assets/Scenes/DesertPlanet.unity
+    guid: e9b0c0dd1fd19444797abb9930031db1
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0
