@@ -39,6 +39,7 @@ public class LaunchPad : PlayableObject
 
     void Awake()
     {
+        GM = GameObject.Find("GameMaster").GetComponent<GameMaster>();
         radialBar.displayPercent = 0f;
 
         escapeCollider = GetComponent<SphereCollider>();

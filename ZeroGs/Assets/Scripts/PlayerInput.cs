@@ -24,6 +24,7 @@ public class PlayerInput : MonoBehaviour
     private CharacterController controller;
     private Vector2 moveInput;
     private float verticalVelo = 0f;
+    private float stunDuration = 0f;
 
 
 
@@ -44,6 +45,11 @@ public class PlayerInput : MonoBehaviour
         playAnim("running");
 
         Vector3 moveDirection = new Vector3(moveInput.x, 0, moveInput.y);
+        if (this.stunDuration > 0f)
+        {
+            moveDirection = Vector3.zero;
+            this.stunDuration -= Time.deltaTime;
+        }
 
         //rotate towards move direction
         if (moveDirection != Vector3.zero)
@@ -98,6 +104,12 @@ public class PlayerInput : MonoBehaviour
             if (obj == null)
                 playObjs.Remove(obj);
         }
+    }
+
+
+    public void Stun(float seconds)
+    {
+        this.stunDuration = seconds;
     }
 
 

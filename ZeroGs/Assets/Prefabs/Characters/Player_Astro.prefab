@@ -224,9 +224,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100014, guid: 02dd6406ed1ebc248b2fafd0485e0de9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5774558160685683621}
-    - targetCorrespondingSourceObject: {fileID: 100014, guid: 02dd6406ed1ebc248b2fafd0485e0de9, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: -4112527283971702050}
   m_SourcePrefab: {fileID: 100100000, guid: 02dd6406ed1ebc248b2fafd0485e0de9, type: 3}
 --- !u!4 &6744972951042102632 stripped
 Transform:
@@ -353,6 +350,10 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: db5cbbc5-8fd1-4480-bf49-223bcd8d862d
     m_ActionName: 'Player/Interact[/Keyboard/f]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: df66d060-3b2f-4a00-a29e-0727707ad014
+    m_ActionName: 'Player/MenuPause[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -371,8 +372,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravity: 15
-  speed: 5
-  jumpSpeed: 8
+  speed: 10
+  jumpSpeed: 10
   turnSpeed: 720
   playObjs: []
   holding: {fileID: 0}
@@ -400,17 +401,3 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0.3, z: 0.7}
---- !u!114 &-4112527283971702050
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6744972951042132296}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c44093cf3455ff439b92002ab69ee22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SpawnPoint: {fileID: 0}
-  moveSpeed: 5

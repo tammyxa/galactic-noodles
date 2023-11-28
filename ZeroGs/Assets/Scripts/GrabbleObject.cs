@@ -38,7 +38,10 @@ public class GrabbleObject : PlayableObject
                 player.holding = this.gameObject;
                 Rigidbody rb = player.holding.GetComponent<Rigidbody>();
                 if (rb != null)
+                {
                     rb.constraints = RigidbodyConstraints.FreezeAll;
+                    rb.velocity = Vector3.zero;
+                }
                 player.holding.transform.SetParent(player.transform);
                 player.holding.transform.localPosition = new Vector3(0f, 1f, 0.85f);
                 player.holding.transform.LookAt(player.transform, Vector3.forward);
