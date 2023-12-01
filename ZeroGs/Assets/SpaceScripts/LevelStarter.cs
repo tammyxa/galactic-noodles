@@ -5,7 +5,6 @@ using UnityEngine;
 public class LevelStarter : MonoBehaviour
 {
     public GameObject info;
-   
     public GameObject countDown3;
     public GameObject countDown2;
     public GameObject countDown1;

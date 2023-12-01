@@ -12,6 +12,7 @@ public class DialogueManager : MonoBehaviour
 	public Animator animator;
 
 	private Queue<string> sentences;
+	
 
     //public MissionTrackerManager MissionTrackerManager;
 

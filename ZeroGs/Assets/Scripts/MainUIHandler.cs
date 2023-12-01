@@ -14,15 +14,26 @@ public class MainUiHandler : MonoBehaviour
     public GameObject winUi;
     public LaunchPad launchPad;
 
+    public Text countdownText;
+
     void Awake()
     {
         this.winUi.SetActive(false);
     }
 
-    void Update()
+void Update()
+{
+    buildBar.value = launchPad.buildProgress / launchPad.requiredBuild;
+
+    // Countdown logic
+    int countdownValue = Mathf.CeilToInt(20 - (buildBar.value * 20));
+    countdownText.text = "Scrap Needed to repair launchpad:" + countdownValue;
+
+    if (countdownValue <= 0)
     {
-        buildBar.value = launchPad.buildProgress / launchPad.requiredBuild;
+        ShowWinState(true);
     }
+}
 
     public void ShowWinState(bool show=true)
     {

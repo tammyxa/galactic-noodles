@@ -36,7 +36,7 @@ public class GameMaster : MonoBehaviour
     void Start()
     {
         shipProp = GameObject.Find("PodOnLegs");
-        //CineCam = GameObject.Find("TargetGroup").GetComponent<CinemachineTargetGroup>();
+        CineCam = GameObject.Find("TargetGroup").GetComponent<CinemachineTargetGroup>();
     }
 
     public enum WinState {
